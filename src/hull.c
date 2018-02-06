@@ -224,9 +224,9 @@ static void _insert_tri(tri_t *t, POINT2D *points, int p1, int p2, int p3, bool 
 }
 
 /*
- * Calculates the delaunay triangulation for the set of
- * points in *g. The algorithm loops over the points from
- * west to east and a great optimization is achieved by filtering
+ * Calculates the delaunay triangulation for the given set of
+ * points. The algorithm loops over the points from west to
+ * east and a great optimization is achieved by filtering
  * out old points.
  */
 void triangulate(POINT2D *points, int npoints, tri_t *t, int srid) {
@@ -247,10 +247,13 @@ void triangulate(POINT2D *points, int npoints, tri_t *t, int srid) {
     qsort(points, npoints, sizeof(POINT2D), _pt_compare);
 
     /*
-     * We construct a supertriangle by drawing a triangle
-     * around the bounding box of all the points. This is
-     * the first triangle in the buffer and it will be
-     * filtered out before the final hull construction.
+     * We construct a supertriangle by drawing a triangle around
+     * the bounding box of all the points. This is the first triangle
+     * in the buffer and it will be filtered out before the final
+     * hull construction.
+     *
+     * We just hardcode the bounding box for 4326 as this will be the most
+     * common use case.
      */
     if (srid != 4326) {
         float8 xmid, ymid;
@@ -427,7 +430,7 @@ static bool _point_in_polygon(polygon_t *poly, int ring, float8 x, float8 y) {
 }
 
 /*
- * Wrapper around _point_in_polygon().
+ * Wrapper around _point_in_polygon()
  */
 static bool _point_in_inner_polygon(polygon_t *poly, float8 x, float8 y) {
     for (int i = 1; i < poly->rings; i++)
@@ -493,8 +496,7 @@ static void _insert_new_polygon(multipolygon_t *multi, float8 x, float8 y, int *
 }
 
 /*
- * Finds the correct index based on the current
- * ring, checks for space and adds the point.
+ * Finds the correct index based on the current ring, checks for space and adds the point
  */
 static void _add_point_to_polygon(multipolygon_t *multi, float8 x, float8 y, int ptr, bool flag) {
     polygon_t *poly = &(multi->poly[ptr]);
@@ -552,10 +554,9 @@ static void _add_point_to_polygon(multipolygon_t *multi, float8 x, float8 y, int
 }
 
 /*
- * When a hull does not reach its starting point it is
- * most likely an artifact from the delaunay
- * triangulation. These edges are flushed from the buffer
- * by either removing a ring or a polygon.
+ * When a hull does not reach its starting point it is most likely an
+ * artifact from the delaunay triangulation. These edges are flushed
+ * from the buffer by either removing a ring or a polygon.
  */
 static void _flush_uncompleted_hull(multipolygon_t *multi, int ptr, bool *new_polygon) {
     polygon_t *a = &(multi->poly[ptr]);
@@ -594,11 +595,10 @@ static void _flush_uncompleted_hull(multipolygon_t *multi, int ptr, bool *new_po
 }
 
 /*
- * A polygon or ring might still be invalid if it does
- * not meet certain constraints. If the polygon or ring
- * has less than 4 points it automatically returns true.
- * Collinearity of the first and second to last point also
- * invalidates the input polygon or ring.
+ * A polygon or ring might still be invalid if it does not meet
+ * certain constraints. If the polygon or ring has less than 4 points
+ * it automatically returns true. Collinearity of the first and second
+ * to last point also invalidates the input polygon or ring.
  */
 static bool _is_polygon_invalid(multipolygon_t *multi, int ptr) {
     polygon_t *poly = &(multi->poly[ptr]);
@@ -628,11 +628,10 @@ static bool _is_polygon_invalid(multipolygon_t *multi, int ptr) {
 }
 
 /*
- * Builds a concave hull by removing all triangles based on
- * the radius of its circumcircle. The remaining
- * triangles are the concave hull, which is constructed from
- * all the unique edges that remain. The result is often a
- * multipolygon.
+ * Builds a concave hull by removing all triangles based on the
+ * radius of its circumcircle. The remaining triangles are the
+ * concave hull, which is constructed from all the unique edges
+ * that remain. The result is often a multipolygon.
  */
 void construct_concave_hull(POINT2D *points, int npoints, tri_t *t, multipolygon_t *multi, float8 mod) {
     bool invalid;

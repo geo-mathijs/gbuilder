@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION ConcaveHull(geometry[])
+CREATE OR REPLACE FUNCTION ConcaveHull(geometry[], alpha float8 DEFAULT 1.0)
     RETURNS geometry
     AS 'MODULE_PATHNAME', 'concave_hull'
     LANGUAGE C STABLE STRICT;

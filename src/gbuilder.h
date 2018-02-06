@@ -7,6 +7,9 @@
  *----------------------------------------------------------------
  */
 
+#ifndef _GBUILDER_H
+#define _GBUILDER_H
+
 #include <utils/array.h>
 #include <utils/geo_decls.h>
 
@@ -67,3 +70,5 @@ typedef struct {
     int len;
     int size;
 } multipolygon_t;
+
+#endif /* _GBUILDER_H */

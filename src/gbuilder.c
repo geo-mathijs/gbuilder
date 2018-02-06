@@ -8,6 +8,7 @@
 
 PG_MODULE_MAGIC;
 
+void _PG_init(void);
 Datum concave_hull(PG_FUNCTION_ARGS);
 Datum concave_hull_finalfn(PG_FUNCTION_ARGS);
 
@@ -80,9 +81,6 @@ Datum concave_hull(PG_FUNCTION_ARGS) {
     mp = (multipolygon_t *) palloc0(sizeof(multipolygon_t));
     tri = (tri_t *) palloc0(sizeof(tri_t));
 
-    /* Call the robust predicate library to initialize the epsilon */
-    exactinit();
-
     /*
      * Compute the delaunay triangulation for the set of points that
      * were extracted from the geometry array. This will add three
@@ -104,6 +102,10 @@ Datum concave_hull(PG_FUNCTION_ARGS) {
      */
     if (tri->len > 4)
         construct_concave_hull(points, npoints, tri, mp, alpha);
+
+    /* Early exit */
+    if (mp->len == 0)
+        PG_RETURN_NULL();
 
     /*
      * After generating an internal representation of the concave hull this
@@ -183,4 +185,9 @@ Datum concave_hull_finalfn(PG_FUNCTION_ARGS) {
         PG_RETURN_NULL();
 
     PG_RETURN_DATUM(result);
+}
+
+/* Call the robust predicate library to initialize the epsilon on backend startup */
+void _PG_init(void) {
+    exactinit();
 }

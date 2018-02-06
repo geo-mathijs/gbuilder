@@ -119,7 +119,8 @@ Datum concave_hull(PG_FUNCTION_ARGS) {
     lwmpoly = lwmpoly_construct_empty(srid, 0, 0);
 
     for (i = 0; i < mp->len; i++) {
-        POINTARRAY **pas = palloc(sizeof(POINTARRAY *) * mp->poly[i].rings);
+        /* Use lwalloc because lwpoly_construct reuses the pointer */
+        POINTARRAY **pas = lwalloc(sizeof(POINTARRAY *) * mp->poly[i].rings);
 
         for (j = 0; j < mp->poly[i].rings; j++) {
             pas[j] = ptarray_construct_empty(0, 0, 0);

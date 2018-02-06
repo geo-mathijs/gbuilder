@@ -1,6 +1,6 @@
 # gbuilder extension
-comment = 'Concave hull builder'
-default_version = '0.1'
+comment = 'Additional geometry builders'
+default_version = '1.0'
 relocatable = true
 module_pathname = '$libdir/gbuilder'
 requires = 'postgis'

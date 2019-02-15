@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION ConcaveHull(geometry[], alpha float8 DEFAULT 1.0)
     AS 'MODULE_PATHNAME', 'concave_hull'
     LANGUAGE C STABLE STRICT;
 
-CREATE OR REPLACE FUNCTION concave_hull_finalfn(pgis_abs)
+CREATE OR REPLACE FUNCTION concave_hull_finalfn(internal)
     RETURNS geometry
     AS 'MODULE_PATHNAME'
     LANGUAGE C;
@@ -11,6 +11,6 @@ CREATE OR REPLACE FUNCTION concave_hull_finalfn(pgis_abs)
 CREATE AGGREGATE ConcaveHull(
     BASETYPE = geometry,
     SFUNC = pgis_geometry_accum_transfn,
-    STYPE = pgis_abs,
+    STYPE = internal,
     FINALFUNC = concave_hull_finalfn
 );
